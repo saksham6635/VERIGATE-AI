@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verigate AI | Module 1: OCR & Vision</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="./public/css/style.css">
+    <script>
+        // Inherit Tailwind config from index.html approach
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0f172a', darker: '#020617', primary: '#10b981',
+                            accent: '#3b82f6', danger: '#ef4444', warning: '#f59e0b', panel: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-primary selection:text-white">
+
+    <!-- Global Navbar -->
+    <div id="navbar-root"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col gap-6">
+        
+        <header class="border-b border-slate-800 pb-4">
+            <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+                <i data-lucide="scan-text" class="text-brand-primary h-8 w-8"></i>
+                Module 1: Vision OCR & Data Extraction
+            </h1>
+            <p class="text-slate-400 text-sm mt-1">Utilizing Groq LLaMA 3.2 Vision to extract structured Identity and MRZ data.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Input & Preview Pane -->
+            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i data-lucide="image-plus" class="w-5 h-5 text-slate-400"></i> Document Upload
+                </h2>
+                
+                <!-- Drag & Drop Zone -->
+                <div id="dropzone" class="relative group border-2 border-dashed border-slate-600 hover:border-brand-primary rounded-lg p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer bg-brand-darker/50 hover:bg-brand-dark overflow-hidden min-h-[300px]">
+                    <input type="file" id="file-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/jpeg, image/png, image/webp">
+                    
+                    <!-- Default Upload UI -->
+                    <div id="upload-ui" class="flex flex-col items-center gap-3 z-10 transition-opacity duration-300">
+                        <div class="p-4 bg-brand-dark rounded-full group-hover:scale-110 transition-transform">
+                            <i data-lucide="upload-cloud" class="w-10 h-10 text-brand-primary"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-white">Click or drag document here</p>
+                            <p class="text-xs text-slate-400 mt-1">Supports JPG, PNG, WEBP (Max 5MB)</p>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview & Scanner Animation -->
+                    <div id="preview-container" class="absolute inset-0 hidden scan-container bg-black z-10">
+                        <img id="image-preview" class="w-full h-full object-contain opacity-80" src="" alt="Document Preview">
+                        <div class="scan-line"></div>
+                        
+                        <!-- Scanning Overlay Badge -->
+                        <div id="scanning-badge" class="absolute inset-0 flex items-center justify-center bg-brand-darker/60 backdrop-blur-sm hidden">
+                            <div class="bg-brand-dark px-4 py-2 rounded-md border border-brand-primary text-brand-primary font-mono text-sm flex items-center gap-2">
+                                <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                                EXTRACTING DATA...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Pane -->
+            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                        <i data-lucide="braces" class="w-5 h-5 text-slate-400"></i> Extracted Payload
+                    </h2>
+                    <span id="process-time" class="text-xs font-mono text-slate-500"></span>
+                </div>
+                
+                <!-- Structured Data Output -->
+                <div id="results-grid" class="flex-grow bg-brand-darker rounded-lg border border-slate-800 p-4 relative overflow-y-auto">
+                    
+                    <!-- Empty State -->
+                    <div id="results-empty" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
+                        <i data-lucide="file-json" class="w-12 h-12 mb-2 opacity-50"></i>
+                        <p class="text-sm">Awaiting document scan...</p>
+                    </div>
+
+                    <!-- Populated Data (Injected via JS) -->
+                    <div id="parsed-data" class="hidden flex flex-col gap-3 font-mono text-sm w-full"></div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Page Initialization -->
+    <script type="module">
+        import { renderNavbar } from './public/js/components/navbar.js';
+        import { initOCRPage } from './public/js/pages/ocr_page.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar('ocr');
+            lucide.createIcons();
+            initOCRPage();
+        });
+    </script>
+</body>
+</html>

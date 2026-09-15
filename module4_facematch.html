@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verigate AI | Module 4: Face Match</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Face-API.js (Loaded via CDN) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    
+    <link rel="stylesheet" href="./public/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { brand: { dark: '#0f172a', darker: '#020617', primary: '#10b981', danger: '#ef4444', warning: '#f59e0b', panel: '#1e293b' } } } }
+        }
+    </script>
+</head>
+<body class="bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased">
+
+    <div id="navbar-root"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col gap-6">
+        
+        <header class="border-b border-slate-800 pb-4">
+            <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+                <i data-lucide="user-check" class="text-brand-primary h-8 w-8"></i>
+                Module 4: Biometric Face Match
+            </h1>
+            <p class="text-slate-400 text-sm mt-1">1:1 Verification comparing the document's photo against a live webcam capture.</p>
+        </header>
+
+        <!-- Loading State for AI Models -->
+        <div id="model-loading" class="bg-brand-dark border border-brand-primary/30 p-4 rounded-xl flex items-center gap-4 text-brand-primary">
+            <i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i>
+            <span class="font-mono text-sm font-bold tracking-widest">INITIALIZING NEURAL NETWORKS...</span>
+        </div>
+
+        <div id="biometric-workspace" class="grid grid-cols-1 lg:grid-cols-2 gap-6 hidden">
+            
+            <!-- Target 1: Document Upload -->
+            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i data-lucide="contact-2" class="w-5 h-5 text-slate-400"></i> Identity Document
+                </h2>
+                
+                <div class="relative group border-2 border-dashed border-slate-600 rounded-lg p-4 flex flex-col items-center justify-center bg-brand-darker/50 h-[300px] overflow-hidden">
+                    <input type="file" id="doc-image-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/jpeg, image/png">
+                    
+                    <div id="doc-ui" class="flex flex-col items-center gap-2 z-10">
+                        <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500"></i>
+                        <p class="text-sm text-slate-400 font-bold">Upload ID Photo</p>
+                    </div>
+
+                    <img id="doc-preview" class="absolute inset-0 w-full h-full object-contain opacity-0 z-10 transition-opacity hidden" src="" alt="Document Face">
+                </div>
+            </section>
+
+            <!-- Target 2: Live Camera -->
+            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                        <i data-lucide="webcam" class="w-5 h-5 text-brand-primary"></i> Live Checkpoint Camera
+                    </h2>
+                    <span id="cam-status" class="flex h-3 w-3 relative">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-danger opacity-75 hidden" id="cam-ping"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-slate-600" id="cam-dot"></span>
+                    </span>
+                </div>
+                
+                <div class="relative border-2 border-slate-700 rounded-lg bg-black h-[300px] overflow-hidden flex items-center justify-center">
+                    <video id="webcam-feed" class="w-full h-full object-cover hidden" autoplay muted playsinline></video>
+                    <canvas id="webcam-canvas" class="absolute inset-0 z-20"></canvas>
+                    
+                    <button id="start-cam-btn" class="absolute z-30 bg-slate-800 hover:bg-brand-primary text-white hover:text-brand-darker px-4 py-2 rounded-md font-bold transition-colors border border-slate-600 flex gap-2 items-center">
+                        <i data-lucide="power" class="w-4 h-4"></i> Activate Camera
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Verification Action & Results -->
+        <div id="action-workspace" class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col items-center gap-4 hidden">
+            <button id="verify-btn" class="bg-brand-primary hover:bg-emerald-400 text-brand-darker font-black text-lg py-4 px-12 rounded-full transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] disabled:opacity-50 disabled:cursor-not-allowed">
+                RUN BIOMETRIC VERIFICATION
+            </button>
+
+            <!-- Result Scorecard -->
+            <div id="match-results" class="w-full max-w-2xl mt-4 hidden reveal-data">
+                <div class="flex justify-between items-end mb-2">
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-widest">Similarity Distance</span>
+                    <span id="score-text" class="text-2xl font-black text-white">0.00</span>
+                </div>
+                
+                <div class="w-full bg-slate-800 rounded-full h-4 mb-4 overflow-hidden relative border border-slate-700">
+                    <div id="score-bar" class="h-4 rounded-full transition-all duration-1000 w-0"></div>
+                    <!-- Threshold Marker line -->
+                    <div class="absolute top-0 bottom-0 border-l border-white/50 z-10" style="left: 55%;"></div> 
+                </div>
+
+                <div id="match-verdict" class="text-center p-4 rounded-lg font-mono font-bold tracking-wider border"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { renderNavbar } from './public/js/components/navbar.js';
+        import { initFaceMatchPage } from './public/js/pages/facematch_page.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar('facematch');
+            lucide.createIcons();
+            initFaceMatchPage();
+        });
+    </script>
+</body>
+</html>

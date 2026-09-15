@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verigate AI | Module 2: Rules & MRZ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="./public/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { brand: { dark: '#0f172a', darker: '#020617', primary: '#10b981', danger: '#ef4444', warning: '#f59e0b', panel: '#1e293b' } } } }
+        }
+    </script>
+</head>
+<body class="bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased">
+
+    <div id="navbar-root"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col gap-6">
+        
+        <header class="border-b border-slate-800 pb-4">
+            <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+                <i data-lucide="file-check-2" class="text-brand-primary h-8 w-8"></i>
+                Module 2: Rule Engine & MRZ Validation
+            </h1>
+            <p class="text-slate-400 text-sm mt-1">Mathematical checksum verification (ICAO 9303 standard) and expiry rule enforcement.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Input Form Pane -->
+            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i data-lucide="keyboard" class="w-5 h-5 text-slate-400"></i> Manual Data Entry
+                </h2>
+                
+                <form id="validation-form" class="flex flex-col gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Document Number & Check Digit</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="doc-number" placeholder="e.g. L898902C3" class="flex-grow bg-brand-dark border border-slate-700 rounded p-2 text-white font-mono uppercase focus:border-brand-primary focus:outline-none">
+                            <input type="text" id="doc-check" placeholder="Digit" maxlength="1" class="w-16 bg-brand-dark border border-slate-700 rounded p-2 text-white font-mono text-center focus:border-brand-primary focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Date of Birth (YYMMDD) & Check Digit</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="dob-mrz" placeholder="e.g. 690806" maxlength="6" class="flex-grow bg-brand-dark border border-slate-700 rounded p-2 text-white font-mono focus:border-brand-primary focus:outline-none">
+                            <input type="text" id="dob-check" placeholder="Digit" maxlength="1" class="w-16 bg-brand-dark border border-slate-700 rounded p-2 text-white font-mono text-center focus:border-brand-primary focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Date of Expiry (YYMMDD) & Check Digit</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="exp-mrz" placeholder="e.g. 240623" maxlength="6" class="flex-grow bg-brand-dark border border-slate-700 rounded p-2 text-white font-mono focus:border-brand-primary focus:outline-none">
+                            <input type="text" id="exp-check" placeholder="Digit" maxlength="1" class="w-16 bg-brand-dark border border-slate-700 rounded p-2 text-white font-mono text-center focus:border-brand-primary focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="mt-4 w-full bg-slate-800 hover:bg-brand-primary hover:text-brand-darker text-white font-bold py-3 px-4 rounded-lg transition-colors border border-slate-700 hover:border-brand-primary flex justify-center items-center gap-2">
+                        <i data-lucide="calculator" class="w-5 h-5"></i> Execute Validation Algorithms
+                    </button>
+                    
+                    <button type="button" id="load-sample-btn" class="text-xs text-slate-500 hover:text-slate-300 text-center transition-colors">
+                        Load Sample Passport MRZ Data
+                    </button>
+                </form>
+            </section>
+
+            <!-- Results Pane -->
+            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i data-lucide="shield-alert" class="w-5 h-5 text-slate-400"></i> Verification Results
+                </h2>
+                
+                <div id="results-container" class="flex-grow flex flex-col gap-3">
+                    <div id="idle-state" class="flex-grow flex flex-col items-center justify-center text-slate-500 min-h-[200px]">
+                        <i data-lucide="binary" class="w-12 h-12 mb-2 opacity-50"></i>
+                        <p class="text-sm">Awaiting input for checksum validation...</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { renderNavbar } from './public/js/components/navbar.js';
+        import { initValidationPage } from './public/js/pages/validation_page.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar('validation');
+            lucide.createIcons();
+            initValidationPage();
+        });
+    </script>
+</body>
+</html>

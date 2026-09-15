@@ -1,0 +1,7 @@
+# Operating System Junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# VS Code Local Workspace Settings
+.vscode/

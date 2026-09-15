@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verigate AI | Border Security Intelligence</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="./public/css/style.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0a0a0a',     // Deep almost-black
+                            darker: '#000000',   // Pure black
+                            primary: '#10b981',  // Emerald
+                            accent: '#06b6d4',   // Cyan
+                            danger: '#ef4444',
+                            warning: '#f59e0b',
+                            panel: '#171717'     // Neutral 900
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    },
+                    backgroundImage: {
+                        'hero-glow': 'radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15) 0%, rgba(0, 0, 0, 0) 50%)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-brand-darker text-slate-300 min-h-screen flex flex-col font-sans antialiased overflow-x-hidden selection:bg-brand-primary/30 selection:text-emerald-200">
+
+    <!-- Navbar -->
+    <div id="navbar-root" class="fixed top-0 w-full z-50 border-b border-white/[0.05] bg-black/50 backdrop-blur-md"></div>
+
+    <!-- MAIN LANDING PAGE -->
+    <main class="flex-grow pt-24 pb-20">
+        
+        <!-- HERO SECTION -->
+        <section class="relative max-w-7xl mx-auto px-6 pt-20 pb-32 text-center">
+            <div class="absolute inset-0 bg-hero-glow -z-10 pointer-events-none"></div>
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-medium mb-8">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                System v1.0 Operational
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6">
+                Next-Gen Border <br />
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-500">Identity Screening.</span>
+            </h1>
+            
+            <p class="max-w-2xl mx-auto text-lg text-slate-400 mb-10 leading-relaxed">
+                Empower checkpoints with edge-deployed AI. Detect sophisticated forgeries, parse MRZ strings, and execute 1:1 facial verification in under 500 milliseconds.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#command-terminal" class="bg-white text-black hover:bg-slate-200 px-8 py-3.5 rounded-lg font-bold transition-all flex items-center gap-2">
+                    <i data-lucide="terminal" class="w-5 h-5"></i> Launch Terminal
+                </a>
+                <a href="#features" class="bg-white/[0.05] hover:bg-white/[0.1] text-white border border-white/[0.1] px-8 py-3.5 rounded-lg font-bold transition-all flex items-center gap-2">
+                    View Architecture
+                </a>
+            </div>
+        </section>
+
+        <!-- BENTO GRID FEATURES SECTION -->
+        <section id="features" class="max-w-7xl mx-auto px-6 py-20">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">A Complete Forensic Pipeline</h2>
+                <p class="text-slate-400">Four integrated modules running natively in your browser.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Module 1: Span 2 cols -->
+                <a href="module1_ocr.html" class="bento-card md:col-span-2 group">
+                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="scan-text" class="w-32 h-32 text-emerald-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">Vision OCR Engine</h3>
+                    <p class="text-slate-400 max-w-sm">Groq-powered Qwen-3.6 Vision instantly parses passports, visas, and national IDs into structured JSON payloads.</p>
+                </a>
+                
+                <!-- Module 2: Span 1 col -->
+                <a href="module2_validation.html" class="bento-card group">
+                    <div class="bg-white/[0.03] w-12 h-12 rounded-lg flex items-center justify-center mb-4 border border-white/[0.05]">
+                        <i data-lucide="binary" class="w-6 h-6 text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">ICAO 9303 Rules</h3>
+                    <p class="text-slate-400 text-sm">Algorithmic checksum validation to catch digitally altered MRZ dates.</p>
+                </a>
+                
+                <!-- Module 3: Span 1 col -->
+                <a href="module3_tamper.html" class="bento-card group">
+                    <div class="bg-white/[0.03] w-12 h-12 rounded-lg flex items-center justify-center mb-4 border border-white/[0.05]">
+                        <i data-lucide="layers" class="w-6 h-6 text-amber-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">Error Level Analysis</h3>
+                    <p class="text-slate-400 text-sm">Browser-native canvas pixel subtraction to highlight spliced photos.</p>
+                </a>
+
+                <!-- Module 4: Span 2 cols -->
+                <a href="module4_facematch.html" class="bento-card md:col-span-2 group overflow-hidden relative">
+                    <div class="absolute -bottom-10 -right-10 opacity-20 group-hover:scale-110 transition-transform duration-700">
+                        <i data-lucide="user-check" class="w-48 h-48 text-indigo-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">Biometric 1:1 Matching</h3>
+                    <p class="text-slate-400 max-w-sm">WebRTC camera integration paired with WebGL face-api.js embeddings to guarantee traveler authenticity on the edge.</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- DASHBOARD / TERMINAL SECTION -->
+        <section id="command-terminal" class="max-w-7xl mx-auto px-6 py-20 border-t border-white/[0.05] mt-10">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Live Command Terminal</h2>
+                    <p class="text-slate-400 text-sm">Real-time checkpoint statistics.</p>
+                </div>
+                <div class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded text-xs font-mono">
+                    CONNECTION: SECURE
+                </div>
+            </div>
+
+            <!-- Dashboard Widgets (IDs preserved for JS) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="stat-card">
+                    <p class="stat-label">Total Scans</p>
+                    <p class="stat-value text-white">84</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Fraud Detected</p>
+                    <p class="stat-value text-red-400">32</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Pending Review</p>
+                    <p class="stat-value text-amber-400">0</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">AI Accuracy</p>
+                    <p class="stat-value text-emerald-400">85.2%</p>
+                </div>
+            </div>
+
+            <!-- Activity Table (ID preserved for dashboard.js) -->
+            <div class="bg-[#0a0a0a] rounded-xl border border-white/[0.05] overflow-hidden p-1">
+                <div class="bg-[#111] rounded-lg">
+                    <div class="px-6 py-4 border-b border-white/[0.05] flex justify-between items-center">
+                        <h3 class="text-sm font-semibold text-white">Recent Screening Logs</h3>
+                        <a href="logs.html" class="text-xs text-emerald-400 hover:text-emerald-300">View All &rarr;</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-slate-500 bg-[#0a0a0a]">
+                                <tr>
+                                    <th class="px-6 py-3 font-medium">Timestamp</th>
+                                    <th class="px-6 py-3 font-medium">Document ID</th>
+                                    <th class="px-6 py-3 font-medium">Type</th>
+                                    <th class="px-6 py-3 font-medium">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-logs-table" class="divide-y divide-white/[0.02]">
+                                <!-- dashboard.js will inject rows here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/[0.05] py-8 text-center text-slate-500 text-sm">
+        <p>&copy; 2026 Verigate AI. Engineered for Border Security.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { renderNavbar } from './public/js/components/navbar.js';
+        import { initDashboardPage } from './public/js/pages/dashboard.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar('home');
+            lucide.createIcons();
+            initDashboardPage();
+        });
+    </script>
+</body>
+</html>

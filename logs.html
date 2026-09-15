@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verigate AI | Audit Logs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="./public/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { brand: { dark: '#0f172a', darker: '#020617', primary: '#10b981', danger: '#ef4444', warning: '#f59e0b', panel: '#1e293b' } } } }
+        }
+    </script>
+</head>
+<body class="bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased">
+
+    <div id="navbar-root"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col gap-6">
+        
+        <header class="border-b border-slate-800 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+                    <i data-lucide="clipboard-list" class="text-brand-primary h-8 w-8"></i>
+                    System Audit Logs
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">Immutable record of all local document screening sessions and flagged anomalies.</p>
+            </div>
+            
+            <div class="flex gap-3">
+                <button id="clear-logs-btn" class="bg-brand-darker hover:bg-brand-danger/20 text-slate-300 hover:text-brand-danger border border-slate-700 hover:border-brand-danger px-4 py-2 rounded-md text-sm font-bold transition-colors flex items-center gap-2">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i> Purge Logs
+                </button>
+                <button id="export-json-btn" class="bg-slate-800 hover:bg-brand-primary hover:text-brand-darker text-white border border-slate-600 hover:border-brand-primary px-4 py-2 rounded-md text-sm font-bold transition-colors flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> Export JSON
+                </button>
+            </div>
+        </header>
+
+        <!-- Filters & Search -->
+        <section class="glass-panel p-4 rounded-xl border border-slate-800 flex flex-wrap gap-4 items-center justify-between">
+            <div class="flex items-center gap-2 relative flex-grow max-w-md">
+                <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3"></i>
+                <input type="text" id="search-input" placeholder="Search Document ID..." class="w-full bg-brand-dark border border-slate-700 text-sm text-slate-200 rounded pl-9 pr-3 py-2 focus:outline-none focus:border-brand-primary">
+            </div>
+            
+            <div class="flex gap-2">
+                <select id="status-filter" class="bg-brand-dark border border-slate-700 text-sm text-slate-300 rounded px-3 py-2 focus:outline-none focus:border-brand-primary">
+                    <option value="ALL">All Statuses</option>
+                    <option value="CLEAR">Cleared</option>
+                    <option value="REVIEW">Under Review</option>
+                    <option value="REJECTED">Rejected / Fraud</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Data Table -->
+        <section class="glass-panel rounded-xl border border-slate-800 overflow-hidden flex-grow flex flex-col">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left whitespace-nowrap">
+                    <thead class="text-xs text-slate-400 uppercase bg-brand-dark border-b border-slate-800">
+                        <tr>
+                            <th class="px-6 py-4">Timestamp</th>
+                            <th class="px-6 py-4">Document ID</th>
+                            <th class="px-6 py-4">Doc Type</th>
+                            <th class="px-6 py-4">Risk Score</th>
+                            <th class="px-6 py-4">System Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logs-table-body" class="divide-y divide-slate-800/50">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="empty-logs-state" class="hidden flex-col items-center justify-center p-12 text-slate-500">
+                <i data-lucide="database" class="w-12 h-12 mb-3 opacity-50"></i>
+                <p class="text-sm font-medium">No screening logs found in local storage.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script type="module">
+        import { renderNavbar } from './public/js/components/navbar.js';
+        import { initLogsPage } from './public/js/pages/logs_page.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar('logs');
+            lucide.createIcons();
+            initLogsPage();
+        });
+    </script>
+</body>
+</html>
