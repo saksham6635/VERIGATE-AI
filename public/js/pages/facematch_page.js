@@ -14,6 +14,7 @@ export async function initFaceMatchPage() {
     const startCamBtn = document.getElementById('start-cam-btn');
     const camPing = document.getElementById('cam-ping');
     const camDot = document.getElementById('cam-dot');
+    const cameraError = document.getElementById('camera-error');
     
     const verifyBtn = document.getElementById('verify-btn');
     const matchResults = document.getElementById('match-results');
@@ -32,7 +33,11 @@ export async function initFaceMatchPage() {
         biometricWorkspace.classList.remove('hidden');
         actionWorkspace.classList.remove('hidden');
     } catch (error) {
-        modelLoading.innerHTML = `<i data-lucide="x-circle" class="w-6 h-6 text-brand-danger"></i> <span class="text-brand-danger font-bold">${error.message}</span>`;
+        modelLoading.replaceChildren();
+        const message = document.createElement('span');
+        message.className = 'module-error-copy';
+        message.textContent = error.message || 'Face models could not be loaded.';
+        modelLoading.appendChild(message);
         if (window.lucide) window.lucide.createIcons();
         return;
     }
@@ -56,6 +61,7 @@ export async function initFaceMatchPage() {
     // 3. Handle WebRTC Camera
     startCamBtn.addEventListener('click', async () => {
         try {
+            cameraError.classList.add('hidden');
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             videoElement.srcObject = stream;
             videoElement.classList.remove('hidden');
@@ -70,7 +76,8 @@ export async function initFaceMatchPage() {
                 checkReadyState();
             };
         } catch (error) {
-            alert('Camera access denied or unavailable. Check permissions.');
+            cameraError.textContent = 'Camera access is unavailable. Check browser permissions and try again.';
+            cameraError.classList.remove('hidden');
         }
     });
 

@@ -6,6 +6,9 @@
     <title>Verigate AI | Module 3: Tamper Check</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./public/css/style.css">
     <script>
         tailwind.config = {
@@ -14,30 +17,28 @@
         }
     </script>
 </head>
-<body class="bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased">
+<body class="app-page module-tamper bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased">
 
     <div id="navbar-root"></div>
 
-    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col gap-6">
+    <main class="page-shell module-shell flex-grow">
         
-        <header class="border-b border-slate-800 pb-4">
-            <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-                <i data-lucide="microscope" class="text-brand-primary h-8 w-8"></i>
-                Module 3: Digital Tamper & Forgery Detection
-            </h1>
-            <p class="text-slate-400 text-sm mt-1">Browser-native Error Level Analysis (ELA) to detect image manipulation, spliced photos, and altered text.</p>
+        <header class="page-heading">
+            <p class="page-kicker">DOCUMENT REVIEW / 03</p>
+            <h1><i data-lucide="microscope" aria-hidden="true"></i>Image forensics</h1>
+            <p>Inspect compression variance with error level analysis on the uploaded image.</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="module-workspace forensic-workspace">
             
             <!-- Upload & Original Image Pane -->
-            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
+            <section class="workspace-panel glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
                 <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i data-lucide="image" class="w-5 h-5 text-slate-400"></i> Original Document
                 </h2>
                 
-                <div id="tamper-dropzone" class="relative group border-2 border-dashed border-slate-600 hover:border-brand-primary rounded-lg p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer bg-brand-darker/50 hover:bg-brand-dark min-h-[350px]">
-                    <input type="file" id="tamper-file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/jpeg, image/png, image/webp">
+                <div id="tamper-dropzone" class="upload-zone relative group border-2 border-dashed border-slate-600 hover:border-brand-primary rounded-lg p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer bg-brand-darker/50 hover:bg-brand-dark min-h-[350px]">
+                    <input type="file" id="tamper-file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/jpeg, image/png, image/webp" aria-label="Choose a document image for forensic analysis">
                     
                     <div id="tamper-ui" class="flex flex-col items-center gap-3 z-10 transition-opacity">
                         <div class="p-4 bg-brand-dark rounded-full group-hover:scale-110 transition-transform">
@@ -54,7 +55,7 @@
             </section>
 
             <!-- ELA Heatmap & Results Pane -->
-            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
+            <section class="workspace-panel glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
                 <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i data-lucide="activity" class="w-5 h-5 text-brand-primary"></i> ELA Forensics Heatmap
                 </h2>
@@ -66,7 +67,7 @@
                         <span class="text-xs">Heatmap will appear here</span>
                     </div>
                     
-                    <canvas id="ela-canvas" class="max-w-full max-h-full object-contain hidden"></canvas>
+                    <canvas id="ela-canvas" class="max-w-full max-h-full object-contain hidden" role="img" aria-label="Error level analysis result"></canvas>
                     
                     <div id="ela-loading" class="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
                         <div class="text-brand-primary font-mono text-sm flex flex-col items-center gap-3">
@@ -75,6 +76,7 @@
                         </div>
                     </div>
                 </div>
+                <div id="ela-error" class="module-error hidden" role="alert"></div>
 
                 <!-- Analysis Metrics -->
                 <div id="tamper-metrics" class="grid grid-cols-2 gap-4 hidden">
@@ -90,6 +92,12 @@
             </section>
 
         </div>
+        <nav class="module-pagination" aria-label="Module navigation">
+            <a class="module-next-button" href="module4_facematch.html" aria-label="Next module: Face comparison">
+                <span class="module-next-copy"><small>Next module</small><strong>Face comparison</strong></span>
+                <i data-lucide="arrow-right" aria-hidden="true"></i>
+            </a>
+        </nav>
     </main>
 
     <script type="module">

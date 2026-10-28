@@ -6,6 +6,9 @@
     <title>Verigate AI | Audit Logs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./public/css/style.css">
     <script>
         tailwind.config = {
@@ -14,40 +17,38 @@
         }
     </script>
 </head>
-<body class="bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased">
+<body class="app-page logs-page bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased">
 
     <div id="navbar-root"></div>
 
-    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col gap-6">
+    <main class="page-shell logs-shell flex-grow">
         
-        <header class="border-b border-slate-800 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <header class="page-heading logs-heading">
             <div>
-                <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-                    <i data-lucide="clipboard-list" class="text-brand-primary h-8 w-8"></i>
-                    System Audit Logs
-                </h1>
-                <p class="text-slate-400 text-sm mt-1">Immutable record of all local document screening sessions and flagged anomalies.</p>
+                <p class="page-kicker">WORKSPACE / RECORDS</p>
+                <h1><i data-lucide="clipboard-list" aria-hidden="true"></i>Audit history</h1>
+                <p>Review and export screening records stored in this browser.</p>
             </div>
             
             <div class="flex gap-3">
-                <button id="clear-logs-btn" class="bg-brand-darker hover:bg-brand-danger/20 text-slate-300 hover:text-brand-danger border border-slate-700 hover:border-brand-danger px-4 py-2 rounded-md text-sm font-bold transition-colors flex items-center gap-2">
+                <button id="clear-logs-btn" class="button-secondary danger-action">
                     <i data-lucide="trash-2" class="w-4 h-4"></i> Purge Logs
                 </button>
-                <button id="export-json-btn" class="bg-slate-800 hover:bg-brand-primary hover:text-brand-darker text-white border border-slate-600 hover:border-brand-primary px-4 py-2 rounded-md text-sm font-bold transition-colors flex items-center gap-2">
+                <button id="export-json-btn" class="button-primary">
                     <i data-lucide="download" class="w-4 h-4"></i> Export JSON
                 </button>
             </div>
         </header>
 
         <!-- Filters & Search -->
-        <section class="glass-panel p-4 rounded-xl border border-slate-800 flex flex-wrap gap-4 items-center justify-between">
+        <section class="logs-toolbar glass-panel">
             <div class="flex items-center gap-2 relative flex-grow max-w-md">
                 <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3"></i>
-                <input type="text" id="search-input" placeholder="Search Document ID..." class="w-full bg-brand-dark border border-slate-700 text-sm text-slate-200 rounded pl-9 pr-3 py-2 focus:outline-none focus:border-brand-primary">
+                <input type="text" id="search-input" placeholder="Search document ID..." aria-label="Search audit records" class="w-full bg-brand-dark border border-slate-700 text-sm text-slate-200 rounded pl-9 pr-3 py-2 focus:outline-none focus:border-brand-primary">
             </div>
             
             <div class="flex gap-2">
-                <select id="status-filter" class="bg-brand-dark border border-slate-700 text-sm text-slate-300 rounded px-3 py-2 focus:outline-none focus:border-brand-primary">
+                <select id="status-filter" aria-label="Filter audit records by status" class="bg-brand-dark border border-slate-700 text-sm text-slate-300 rounded px-3 py-2 focus:outline-none focus:border-brand-primary">
                     <option value="ALL">All Statuses</option>
                     <option value="CLEAR">Cleared</option>
                     <option value="REVIEW">Under Review</option>
@@ -57,7 +58,7 @@
         </section>
 
         <!-- Data Table -->
-        <section class="glass-panel rounded-xl border border-slate-800 overflow-hidden flex-grow flex flex-col">
+        <section class="logs-table-panel glass-panel">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left whitespace-nowrap">
                     <thead class="text-xs text-slate-400 uppercase bg-brand-dark border-b border-slate-800">
@@ -75,7 +76,7 @@
                 </table>
             </div>
             
-            <div id="empty-logs-state" class="hidden flex-col items-center justify-center p-12 text-slate-500">
+            <div id="empty-logs-state" class="hidden flex-col items-center justify-center p-12 text-slate-500" role="status">
                 <i data-lucide="database" class="w-12 h-12 mb-3 opacity-50"></i>
                 <p class="text-sm font-medium">No screening logs found in local storage.</p>
             </div>

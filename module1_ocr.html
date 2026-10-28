@@ -6,6 +6,9 @@
     <title>Verigate AI | Module 1: OCR & Vision</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./public/css/style.css">
     <script>
         // Inherit Tailwind config from index.html approach
@@ -24,32 +27,30 @@
         }
     </script>
 </head>
-<body class="bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-primary selection:text-white">
+<body class="app-page module-ocr bg-brand-darker text-slate-200 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-primary selection:text-white">
 
     <!-- Global Navbar -->
     <div id="navbar-root"></div>
 
-    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col gap-6">
+    <main class="page-shell module-shell flex-grow">
         
-        <header class="border-b border-slate-800 pb-4">
-            <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-                <i data-lucide="scan-text" class="text-brand-primary h-8 w-8"></i>
-                Module 1: Vision OCR & Data Extraction
-            </h1>
-            <p class="text-slate-400 text-sm mt-1">Utilizing Groq LLaMA 3.2 Vision to extract structured Identity and MRZ data.</p>
+        <header class="page-heading">
+            <p class="page-kicker">DOCUMENT REVIEW / 01</p>
+            <h1><i data-lucide="scan-text" aria-hidden="true"></i>Document intelligence</h1>
+            <p>Extract structured identity fields from passport, visa, and ID images.</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="module-workspace">
             
             <!-- Input & Preview Pane -->
-            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
+            <section class="workspace-panel glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
                 <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i data-lucide="image-plus" class="w-5 h-5 text-slate-400"></i> Document Upload
                 </h2>
                 
                 <!-- Drag & Drop Zone -->
-                <div id="dropzone" class="relative group border-2 border-dashed border-slate-600 hover:border-brand-primary rounded-lg p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer bg-brand-darker/50 hover:bg-brand-dark overflow-hidden min-h-[300px]">
-                    <input type="file" id="file-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/jpeg, image/png, image/webp">
+                <div id="dropzone" class="upload-zone relative group border-2 border-dashed border-slate-600 hover:border-brand-primary rounded-lg p-8 flex flex-col items-center justify-center text-center transition-all cursor-pointer bg-brand-darker/50 hover:bg-brand-dark overflow-hidden min-h-[300px]">
+                    <input type="file" id="file-upload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" accept="image/jpeg, image/png, image/webp" aria-label="Choose a document image for OCR">
                     
                     <!-- Default Upload UI -->
                     <div id="upload-ui" class="flex flex-col items-center gap-3 z-10 transition-opacity duration-300">
@@ -79,7 +80,7 @@
             </section>
 
             <!-- Results Pane -->
-            <section class="glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
+            <section class="workspace-panel results-panel glass-panel p-6 rounded-xl border border-slate-800 flex flex-col gap-4 h-full">
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                         <i data-lucide="braces" class="w-5 h-5 text-slate-400"></i> Extracted Payload
@@ -91,17 +92,23 @@
                 <div id="results-grid" class="flex-grow bg-brand-darker rounded-lg border border-slate-800 p-4 relative overflow-y-auto">
                     
                     <!-- Empty State -->
-                    <div id="results-empty" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
+                    <div id="results-empty" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500" role="status">
                         <i data-lucide="file-json" class="w-12 h-12 mb-2 opacity-50"></i>
                         <p class="text-sm">Awaiting document scan...</p>
                     </div>
 
                     <!-- Populated Data (Injected via JS) -->
-                    <div id="parsed-data" class="hidden flex flex-col gap-3 font-mono text-sm w-full"></div>
+                    <div id="parsed-data" class="hidden flex flex-col gap-3 font-mono text-sm w-full" aria-live="polite"></div>
                 </div>
             </section>
 
         </div>
+        <nav class="module-pagination" aria-label="Module navigation">
+            <a class="module-next-button" href="module2_validation.html" aria-label="Next module: MRZ rule validation">
+                <span class="module-next-copy"><small>Next module</small><strong>MRZ rule validation</strong></span>
+                <i data-lucide="arrow-right" aria-hidden="true"></i>
+            </a>
+        </nav>
     </main>
 
     <!-- Page Initialization -->

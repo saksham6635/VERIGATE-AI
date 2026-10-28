@@ -9,6 +9,7 @@ export function initTamperPage() {
     const elaCanvas = document.getElementById('ela-canvas');
     const elaEmpty = document.getElementById('ela-empty');
     const elaLoading = document.getElementById('ela-loading');
+    const analysisError = document.getElementById('ela-error');
     
     const metricsContainer = document.getElementById('tamper-metrics');
     const metricVariance = document.getElementById('metric-variance');
@@ -22,14 +23,12 @@ export function initTamperPage() {
 
     function handleTamperScan(file) {
         const reader = new FileReader();
-        
-        reader.onloadStart = () => {
-            tamperUi.classList.add('hidden');
-            elaEmpty.classList.add('hidden');
-            elaCanvas.classList.add('hidden');
-            elaLoading.classList.remove('hidden');
-            metricsContainer.classList.add('hidden');
-        };
+        tamperUi.classList.add('hidden');
+        elaEmpty.classList.add('hidden');
+        elaCanvas.classList.add('hidden');
+        elaLoading.classList.remove('hidden');
+        metricsContainer.classList.add('hidden');
+        analysisError.classList.add('hidden');
 
         reader.onload = (e) => {
             const img = new Image();
@@ -41,14 +40,26 @@ export function initTamperPage() {
 
                 // Execute ELA Processing
                 setTimeout(async () => {
-                    const result = await ELAEngine.processELA(img, 0.90);
-                    renderELAResults(result);
+                    try {
+                        const result = await ELAEngine.processELA(img, 0.90);
+                        renderELAResults(result);
+                    } catch (error) {
+                        showAnalysisError(error.message || 'Unable to analyze this image.');
+                    }
                 }, 800);
             };
+            img.onerror = () => showAnalysisError('The selected image could not be decoded. Try another file.');
             img.src = e.target.result;
         };
 
+        reader.onerror = () => showAnalysisError('The selected image could not be read. Try another file.');
         reader.readAsDataURL(file);
+    }
+
+    function showAnalysisError(message) {
+        elaLoading.classList.add('hidden');
+        analysisError.textContent = message;
+        analysisError.classList.remove('hidden');
     }
 
     function renderELAResults(result) {

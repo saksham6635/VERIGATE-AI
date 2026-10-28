@@ -28,13 +28,12 @@ export function initOCRPage() {
         }
 
         const reader = new FileReader();
-        reader.onloadStart = () => {
-            uploadUi.classList.add('hidden');
-            previewContainer.classList.remove('hidden');
-            resultsEmpty.classList.add('hidden');
-            parsedDataContainer.classList.add('hidden');
-            parsedDataContainer.innerHTML = '';
-        };
+        uploadUi.classList.add('hidden');
+        previewContainer.classList.remove('hidden');
+        resultsEmpty.classList.add('hidden');
+        parsedDataContainer.classList.add('hidden');
+        parsedDataContainer.replaceChildren();
+        processTime.textContent = '';
 
         reader.onload = async (e) => {
             const base64Image = e.target.result;
@@ -61,6 +60,7 @@ export function initOCRPage() {
                 scanningBadge.classList.add('hidden');
             }
         };
+        reader.onerror = () => renderError('The selected image could not be read. Try another file.');
         reader.readAsDataURL(file);
     }
 
@@ -91,28 +91,33 @@ export function initOCRPage() {
     }
 
     function renderExtractedData(data) {
-        let html = '';
         for (const [key, value] of Object.entries(data)) {
             const displayKey = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-            const valueStyle = value ? 'text-emerald-400' : 'text-slate-500 italic';
-            const displayValue = value ? value : 'NULL / NOT FOUND';
-
-            html += `
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-800/50 reveal-data">
-                    <span class="text-slate-400 font-semibold">${displayKey}:</span>
-                    <span class="font-mono font-bold ${valueStyle} text-right">${displayValue}</span>
-                </div>
-            `;
+            const row = document.createElement('div');
+            row.className = 'ocr-field-row reveal-data';
+            const label = document.createElement('span');
+            label.className = 'ocr-field-label';
+            label.textContent = displayKey;
+            const fieldValue = document.createElement('span');
+            fieldValue.className = value ? 'ocr-field-value' : 'ocr-field-value is-missing';
+            fieldValue.textContent = value ? String(value) : 'Not found';
+            row.append(label, fieldValue);
+            parsedDataContainer.appendChild(row);
         }
 
-        // NEW Feature: Copy JSON Payload Button
-        html += `
-            <button id="copy-json-btn" class="mt-4 bg-slate-800 hover:bg-brand-primary hover:text-black text-slate-300 font-bold py-2 px-4 rounded transition-colors flex items-center justify-center gap-2 reveal-data border border-slate-700">
-                <i data-lucide="copy" class="w-4 h-4"></i> Copy Raw JSON
-            </button>
-        `;
+        if (!Object.keys(data).length) {
+            const emptyMessage = document.createElement('p');
+            emptyMessage.className = 'ocr-empty-message';
+            emptyMessage.textContent = 'No structured fields were returned for this document.';
+            parsedDataContainer.appendChild(emptyMessage);
+        }
 
-        parsedDataContainer.innerHTML = html;
+        const copyButton = document.createElement('button');
+        copyButton.id = 'copy-json-btn';
+        copyButton.className = 'button-secondary copy-json-button reveal-data';
+        copyButton.type = 'button';
+        copyButton.innerHTML = '<i data-lucide="copy" aria-hidden="true"></i> Copy raw JSON';
+        parsedDataContainer.appendChild(copyButton);
         parsedDataContainer.classList.remove('hidden');
         if (window.lucide) window.lucide.createIcons();
 
@@ -120,26 +125,27 @@ export function initOCRPage() {
         document.getElementById('copy-json-btn').addEventListener('click', (e) => {
             navigator.clipboard.writeText(JSON.stringify(data, null, 2));
             const btn = e.currentTarget;
-            btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Copied to Clipboard`;
-            btn.classList.add('bg-brand-primary', 'text-black');
+            btn.innerHTML = '<i data-lucide="check" aria-hidden="true"></i> Copied';
+            btn.classList.add('is-saved');
             if (window.lucide) window.lucide.createIcons();
             setTimeout(() => {
-                btn.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i> Copy Raw JSON`;
-                btn.classList.remove('bg-brand-primary', 'text-black');
+                btn.innerHTML = '<i data-lucide="copy" aria-hidden="true"></i> Copy raw JSON';
+                btn.classList.remove('is-saved');
                 if (window.lucide) window.lucide.createIcons();
             }, 2000);
         });
     }
 
     function renderError(message) {
-        parsedDataContainer.innerHTML = `
-            <div class="bg-red-500/10 border border-red-500 rounded-md p-4 text-red-500 reveal-data">
-                <div class="flex items-center gap-2 font-bold mb-1">
-                    <i data-lucide="alert-octagon" class="w-4 h-4"></i> Extraction Error
-                </div>
-                <p class="text-sm">${message}</p>
-            </div>
-        `;
+        const errorPanel = document.createElement('div');
+        errorPanel.className = 'module-error reveal-data';
+        errorPanel.setAttribute('role', 'alert');
+        const title = document.createElement('strong');
+        title.textContent = 'Extraction could not be completed';
+        const detail = document.createElement('p');
+        detail.textContent = message;
+        errorPanel.append(title, detail);
+        parsedDataContainer.replaceChildren(errorPanel);
         parsedDataContainer.classList.remove('hidden');
         if (window.lucide) window.lucide.createIcons();
     }

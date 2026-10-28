@@ -3,20 +3,31 @@ export function initLogsPage() {
     const emptyState = document.getElementById('empty-logs-state');
     const exportBtn = document.getElementById('export-json-btn');
     const clearBtn = document.getElementById('clear-logs-btn');
+    const searchInput = document.getElementById('search-input');
+    const statusFilter = document.getElementById('status-filter');
     
-    // Seed some mock data
-    let logs = JSON.parse(localStorage.getItem('VERIGATE_LOGS')) || [];
-    
-    if (logs.length === 0) {
-        logs = [
-            { id: "P92837461", type: "Passport", score: 12, status: "CLEAR", timestamp: new Date(Date.now() - 3600000).toISOString() },
-            { id: "V11234900", type: "Visa", score: 85, status: "REJECTED", timestamp: new Date(Date.now() - 7200000).toISOString() },
-            { id: "DL9948271", type: "Driving License", score: 45, status: "REVIEW", timestamp: new Date(Date.now() - 86400000).toISOString() }
-        ];
-        localStorage.setItem('VERIGATE_LOGS', JSON.stringify(logs));
+    let logs = [];
+    try {
+        const storedLogs = JSON.parse(localStorage.getItem('VERIGATE_LOGS') || '[]');
+        logs = Array.isArray(storedLogs) ? storedLogs : [];
+    } catch (error) {
+        console.warn('[Verigate AI] Unable to read audit history.', error);
     }
 
-    renderTable(logs);
+    renderTable(getFilteredLogs());
+
+    searchInput?.addEventListener('input', () => renderTable(getFilteredLogs()));
+    statusFilter?.addEventListener('change', () => renderTable(getFilteredLogs()));
+
+    function getFilteredLogs() {
+        const query = searchInput?.value.trim().toLowerCase() || '';
+        const status = statusFilter?.value || 'ALL';
+        return logs.filter(log => {
+            const matchesQuery = `${log.id || ''} ${log.type || ''}`.toLowerCase().includes(query);
+            const matchesStatus = status === 'ALL' || String(log.status || '').toUpperCase() === status;
+            return matchesQuery && matchesStatus;
+        });
+    }
 
     function renderTable(data) {
         tableBody.innerHTML = '';
@@ -24,6 +35,8 @@ export function initLogsPage() {
         if (data.length === 0) {
             emptyState.classList.remove('hidden');
             emptyState.classList.add('flex');
+            const message = emptyState.querySelector('p');
+            if (message) message.textContent = logs.length ? 'No records match these filters.' : 'No screening logs recorded yet.';
             return;
         }
 
@@ -32,26 +45,26 @@ export function initLogsPage() {
 
         data.forEach(log => {
             const dateObj = new Date(log.timestamp);
-            const formattedDate = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString();
-            
-            let statusBadge = '';
-            if (log.status === 'CLEAR') {
-                statusBadge = `<span class="bg-brand-primary/20 text-brand-primary border border-brand-primary/30 px-2.5 py-1 rounded text-[10px] font-black tracking-widest uppercase">Clear</span>`;
-            } else if (log.status === 'REJECTED') {
-                statusBadge = `<span class="bg-brand-danger/20 text-brand-danger border border-brand-danger/30 px-2.5 py-1 rounded text-[10px] font-black tracking-widest uppercase">Rejected</span>`;
-            } else {
-                statusBadge = `<span class="bg-brand-warning/20 text-brand-warning border border-brand-warning/30 px-2.5 py-1 rounded text-[10px] font-black tracking-widest uppercase">Review</span>`;
-            }
-
+            const formattedDate = Number.isNaN(dateObj.getTime())
+                ? 'Unknown time'
+                : dateObj.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+            const status = String(log.status || 'UNKNOWN').toUpperCase();
             const tr = document.createElement('tr');
-            tr.className = 'hover:bg-slate-800/30 transition-colors reveal-data';
-            tr.innerHTML = `
-                <td class="px-6 py-4 text-slate-400 font-mono text-xs">${formattedDate}</td>
-                <td class="px-6 py-4 font-bold text-slate-200">${log.id}</td>
-                <td class="px-6 py-4 text-slate-300">${log.type}</td>
-                <td class="px-6 py-4 font-mono">${log.score} <span class="text-[10px] text-slate-500">/ 100</span></td>
-                <td class="px-6 py-4">${statusBadge}</td>
-            `;
+            tr.className = 'reveal-data';
+            appendCell(tr, formattedDate);
+            appendCell(tr, log.id || 'Unassigned');
+            appendCell(tr, log.type || 'Unknown');
+
+            const scoreCell = document.createElement('td');
+            scoreCell.textContent = Number.isFinite(Number(log.score)) ? `${log.score} / 100` : 'Not scored';
+            tr.appendChild(scoreCell);
+
+            const statusCell = document.createElement('td');
+            const statusBadge = document.createElement('span');
+            statusBadge.className = `audit-badge audit-badge--${status.toLowerCase()}`;
+            statusBadge.textContent = status;
+            statusCell.appendChild(statusBadge);
+            tr.appendChild(statusCell);
             tableBody.appendChild(tr);
         });
     }
@@ -72,7 +85,13 @@ export function initLogsPage() {
         if (confirm("Are you sure you want to permanently delete all local screening logs?")) {
             localStorage.setItem('VERIGATE_LOGS', JSON.stringify([]));
             logs = [];
-            renderTable(logs);
+            renderTable(getFilteredLogs());
         }
     });
+
+    function appendCell(row, value) {
+        const cell = document.createElement('td');
+        cell.textContent = value;
+        row.appendChild(cell);
+    }
 }

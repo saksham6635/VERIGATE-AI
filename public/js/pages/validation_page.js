@@ -75,22 +75,24 @@ export function initValidationPage() {
     function renderResultRow(label, passed, detailText) {
         const icon = passed ? 'check-circle-2' : 'x-circle';
         const colorClass = passed ? 'text-brand-primary bg-brand-primary/10 border-brand-primary/20' : 'text-brand-danger bg-brand-danger/10 border-brand-danger/20';
-        
-        const html = `
-            <div class="flex items-center justify-between p-3 rounded-lg border ${colorClass} reveal-data">
-                <div class="flex items-center gap-3">
-                    <i data-lucide="${icon}" class="w-5 h-5"></i>
-                    <div>
-                        <p class="font-bold text-sm">${label}</p>
-                        <p class="text-xs opacity-80">${detailText}</p>
-                    </div>
-                </div>
-                <div class="text-xs font-black tracking-widest uppercase px-2 py-1 rounded bg-black/20">
-                    ${passed ? 'PASS' : 'FAIL'}
-                </div>
-            </div>
-        `;
-        resultsContainer.insertAdjacentHTML('beforeend', html);
+
+        const row = document.createElement('div');
+        row.className = `validation-result ${colorClass} reveal-data`;
+        const iconElement = document.createElement('i');
+        iconElement.dataset.lucide = icon;
+        iconElement.setAttribute('aria-hidden', 'true');
+        const content = document.createElement('div');
+        content.className = 'validation-result-copy';
+        const title = document.createElement('p');
+        title.textContent = label;
+        const detail = document.createElement('p');
+        detail.textContent = detailText;
+        content.append(title, detail);
+        const status = document.createElement('span');
+        status.className = 'validation-result-status';
+        status.textContent = passed ? 'Pass' : 'Fail';
+        row.append(iconElement, content, status);
+        resultsContainer.appendChild(row);
     }
 
     function renderVerdict(failedCount) {
@@ -98,12 +100,13 @@ export function initValidationPage() {
         const color = passed ? 'text-brand-primary' : 'text-brand-danger';
         const message = passed ? 'ALL CHECKS PASSED. MRZ IS AUTHENTIC.' : 'FRAUD DETECTED: CHECKSUM OR DATE VALIDATION FAILED.';
         
-        const html = `
-            <div class="mt-4 pt-4 border-t border-slate-700 text-center reveal-data" style="animation-delay: 0.3s">
-                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Final Verdict</p>
-                <p class="font-mono font-black ${color}">${message}</p>
-            </div>
-        `;
-        resultsContainer.insertAdjacentHTML('beforeend', html);
+        const verdict = document.createElement('div');
+        verdict.className = `validation-verdict ${color} reveal-data`;
+        const heading = document.createElement('p');
+        heading.textContent = 'Final verdict';
+        const summary = document.createElement('p');
+        summary.textContent = message;
+        verdict.append(heading, summary);
+        resultsContainer.appendChild(verdict);
     }
 }
